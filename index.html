@@ -8,82 +8,89 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: #121315; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; }
         
-        .screen { display: none; padding: 10px; width: 100%; max-width: 700px; margin: 0 auto; flex: 1; }
+        .screen { display: none; padding: 8px; width: 100%; max-width: 700px; margin: 0 auto; flex: 1; }
         .screen.active { display: flex; flex-direction: column; }
 
+        /* Login Box */
         .login-box { background: #1e1f23; border: 1px solid #333; border-radius: 12px; padding: 25px; text-align: center; margin: auto; width: 100%; }
         .brand-logo { font-size: 36px; margin-bottom: 5px; color: #e5a93b; }
         .brand-title { font-size: 22px; font-weight: bold; margin-bottom: 5px; color: #fff; }
         .brand-sub { font-size: 13px; color: #aaa; margin-bottom: 20px; }
         
         input, select, textarea {
-            width: 100%; padding: 10px 12px; margin-top: 6px; margin-bottom: 12px;
-            background: #2a2b30; border: 1px solid #444; border-radius: 8px; color: #fff; font-size: 14px; outline: none;
+            width: 100%; padding: 8px 10px; margin-top: 4px; margin-bottom: 10px;
+            background: #2a2b30; border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 13px; outline: none;
         }
         input:focus, select:focus, textarea:focus { border-color: #e5a93b; }
 
         .btn {
-            width: 100%; padding: 12px; background: #e5a93b; border: none; border-radius: 8px;
-            color: #121315; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s;
+            width: 100%; padding: 10px; background: #e5a93b; border: none; border-radius: 6px;
+            color: #121315; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s;
         }
         .btn:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-cancel { background: #444; color: #fff; margin-top: 8px; }
+        .btn-cancel { background: #444; color: #fff; margin-top: 6px; }
         .btn-danger { background: #d32f2f; color: #fff; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #2a2b30; gap: 8px; flex-wrap: wrap; }
-        .header-title { font-size: 16px; font-weight: bold; color: #e5a93b; }
+        /* Header App */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #2a2b30; gap: 8px; }
+        .header-title { font-size: 15px; font-weight: bold; color: #e5a93b; }
         .header-btns { display: flex; gap: 6px; }
-        .btn-sm { width: auto; padding: 6px 10px; font-size: 11px; background: #2a2b30; color: #e5a93b; border: 1px solid #e5a93b; border-radius: 6px; cursor: pointer; }
+        .btn-sm { width: auto; padding: 5px 8px; font-size: 11px; background: #2a2b30; color: #e5a93b; border: 1px solid #e5a93b; border-radius: 6px; cursor: pointer; }
 
-        .map-card { background: #1e1f23; border: 1px solid #333; border-radius: 10px; padding: 10px; margin: 10px 0; text-align: center; }
-        .map-title { font-size: 12px; font-weight: bold; color: #e5a93b; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .map-img { width: 100%; max-height: 250px; object-fit: contain; border-radius: 6px; background: #fff; padding: 4px; }
+        /* Mappa Spiaggia COMPATTA */
+        .map-card { background: #1e1f23; border: 1px solid #333; border-radius: 8px; padding: 6px 8px; margin: 6px 0; text-align: center; }
+        .map-title { font-size: 11px; font-weight: bold; color: #e5a93b; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .map-img { width: 100%; max-height: 180px; object-fit: contain; border-radius: 6px; background: #fff; padding: 2px; margin-top: 6px; }
 
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .controls label { font-size: 10px; color: #aaa; text-transform: uppercase; }
+        /* Controls */
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        .controls label { font-size: 9px; color: #aaa; text-transform: uppercase; }
 
+        /* Banner Data Passata */
         .past-banner {
             background: #3a2e12; border: 1px solid #e5a93b; color: #e5a93b;
-            padding: 6px 10px; border-radius: 6px; font-size: 11px; text-align: center;
-            margin-bottom: 10px; font-weight: bold; display: none;
+            padding: 4px 8px; border-radius: 6px; font-size: 10px; text-align: center;
+            margin-bottom: 6px; font-weight: bold; display: none;
         }
 
-        .room-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .room-name { font-size: 15px; font-weight: bold; }
-        .counters { font-size: 11px; font-weight: bold; }
-        .badge-free { color: #4caf50; margin-right: 8px; }
+        .room-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .room-name { font-size: 13px; font-weight: bold; }
+        .counters { font-size: 10px; font-weight: bold; }
+        .badge-free { color: #4caf50; margin-right: 6px; }
         .badge-occ { color: #f44336; }
 
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        /* GRIGLIA COMPATTA - 6 PER RIGA */
+        .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
         .table-card {
-            aspect-ratio: 1; border-radius: 8px; padding: 4px; display: flex; flex-direction: column;
-            justify-content: space-between; align-items: center; text-align: center; cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3); position: relative; overflow: hidden;
+            min-height: 46px; border-radius: 6px; padding: 2px 1px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center; cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3); position: relative; overflow: hidden;
         }
         .table-card.free { background: #1b3e20; border: 1px solid #2e7d32; color: #81c784; }
         .table-card.free.disabled { background: #222; border-color: #444; color: #666; cursor: not-allowed; opacity: 0.6; }
         .table-card.occupied { background: #4a1919; border: 1px solid #c62828; color: #ef9a9a; }
-        .table-number { font-size: 14px; font-weight: bold; margin-top: 2px; }
-        .table-status { font-size: 8px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.2px; }
-        .table-client { font-size: 8px; word-break: break-word; color: #fff; font-weight: 600; line-height: 1.05; max-height: 18px; overflow: hidden; }
+        .table-number { font-size: 11px; font-weight: bold; line-height: 1; }
+        .table-status { font-size: 7px; text-transform: uppercase; font-weight: bold; margin-top: 2px; }
+        .table-client { font-size: 7.5px; word-break: break-word; color: #fff; font-weight: 600; line-height: 1; max-height: 15px; overflow: hidden; margin-top: 1px; }
 
-        .slot-tag { font-size: 7px; background: rgba(255,255,255,0.2); padding: 1px 3px; border-radius: 3px; font-weight: bold; }
+        .slot-tag { font-size: 6px; background: rgba(255,255,255,0.2); padding: 1px 2px; border-radius: 2px; font-weight: bold; margin-top: 1px; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        /* Modal Overlay */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 12px; }
         .modal.active { display: flex; }
-        .modal-content { background: #1e1f23; border: 1px solid #333; border-radius: 12px; width: 100%; max-width: 500px; padding: 20px; max-height: 90vh; overflow-y: auto; }
-        .modal-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #e5a93b; text-align: center; }
+        .modal-content { background: #1e1f23; border: 1px solid #333; border-radius: 10px; width: 100%; max-width: 450px; padding: 16px; max-height: 90vh; overflow-y: auto; }
+        .modal-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #e5a93b; text-align: center; }
 
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .section-tag { background: #2a2b30; color: #e5a93b; padding: 6px 10px; font-size: 12px; font-weight: bold; border-radius: 6px; margin: 12px 0 6px 0; border-left: 3px solid #e5a93b; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .section-tag { background: #2a2b30; color: #e5a93b; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; margin: 10px 0 4px 0; border-left: 3px solid #e5a93b; }
 
-        .stat-card { background: #2a2b30; border: 1px solid #444; border-radius: 8px; padding: 10px; margin-bottom: 10px; text-align: center; }
-        .stat-val { font-size: 20px; font-weight: bold; color: #e5a93b; }
-        .stat-lbl { font-size: 10px; color: #aaa; text-transform: uppercase; }
+        .stat-card { background: #2a2b30; border: 1px solid #444; border-radius: 6px; padding: 8px; margin-bottom: 8px; text-align: center; }
+        .stat-val { font-size: 18px; font-weight: bold; color: #e5a93b; }
+        .stat-lbl { font-size: 9px; color: #aaa; text-transform: uppercase; }
 
-        .reg-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        .reg-table th, .reg-table td { padding: 8px 4px; text-align: left; border-bottom: 1px solid #333; }
-        .reg-table th { color: #e5a93b; font-size: 10px; }
+        .reg-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px; }
+        .reg-table th, .reg-table td { padding: 6px 2px; text-align: left; border-bottom: 1px solid #333; }
+        .reg-table th { color: #e5a93b; font-size: 9px; }
     </style>
 </head>
 <body>
@@ -100,30 +107,30 @@
 
     <div id="screen-app" class="screen">
         <div class="header">
-            <div class="header-title">🏖️ Lido Prenotazioni</div>
+            <div class="header-title">🏖️ Lido Ombrelloni</div>
             <div class="header-btns">
                 <button class="btn-sm" onclick="openMasterModal()">📊 Incassi & Registro</button>
             </div>
         </div>
 
-        <div class="controls" style="margin-top: 10px;">
+        <div class="controls" style="margin-top: 6px;">
             <div>
                 <label>Data</label>
                 <input type="date" id="filter-date" onchange="renderUmbrellas()">
             </div>
             <div>
-                <label>Fascia Oraria / Turno</label>
+                <label>Turno</label>
                 <select id="filter-slot" onchange="renderUmbrellas()">
                     <option value="Tutti">Tutti i Turni</option>
                     <option value="Giornata Intera">Giornata Intera</option>
-                    <option value="Mattina">Mezza Giornata (Mattina)</option>
-                    <option value="Pomeriggio">Mezza Giornata (Pomeriggio)</option>
+                    <option value="Mattina">Mezza (Mattina)</option>
+                    <option value="Pomeriggio">Mezza (Pomeriggio)</option>
                 </select>
             </div>
         </div>
 
         <div class="past-banner" id="past-banner">
-            ⚠️ Data antecedente ad oggi: consultazione storico (Prenotazioni disabilitate)
+            ⚠️ Data passata: consultazione storico (Prenotazioni disabilitate)
         </div>
 
         <div class="map-card">
@@ -131,15 +138,14 @@
                 <span>🗺️ Schema Ombrelloni 2026</span>
                 <span id="map-toggle-icon">▼ nascondi</span>
             </div>
-            <img src="schema ombrelloni 2026.png" id="beach-map-img" class="map-img" alt="Mappa Spiaggia Ombrelloni" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-            <p style="display:none; font-size:11px; color:#aaa; margin-top:5px;">Carica l'immagine <b>schema ombrelloni 2026.png</b> su GitHub.</p>
+            <img src="schema ombrelloni 2026.png" id="beach-map-img" class="map-img" alt="Mappa Spiaggia" onerror="this.style.display='none';">
         </div>
 
         <div class="room-header">
-            <div class="room-name">🏖️ Ombrelloni & Gazebo B</div>
+            <div class="room-name">🏖️ Ombrelloni (1-50 & B)</div>
             <div class="counters">
-                <span class="badge-free">🟢 Liberi: <span id="count-free">0</span></span>
-                <span class="badge-occ">🔴 Occupati: <span id="count-occ">0</span></span>
+                <span class="badge-free">🟢 Lib: <span id="count-free">0</span></span>
+                <span class="badge-occ">🔴 Occ: <span id="count-occ">0</span></span>
             </div>
         </div>
 
@@ -158,8 +164,8 @@
                     <label>Durata</label>
                     <select id="book-slot">
                         <option value="Giornata Intera">Giornata Intera</option>
-                        <option value="Mattina">Mezza Giornata (Mattina)</option>
-                        <option value="Pomeriggio">Mezza Giornata (Pomeriggio)</option>
+                        <option value="Mattina">Mezza (Mattina)</option>
+                        <option value="Pomeriggio">Mezza (Pomeriggio)</option>
                     </select>
                 </div>
                 <div>
@@ -179,8 +185,8 @@
                 </div>
             </div>
 
-            <label>Note / Richieste Particolari</label>
-            <textarea id="book-notes" rows="2" placeholder="Es. Prima fila, vicino bar..."></textarea>
+            <label>Note / Richieste</label>
+            <textarea id="book-notes" rows="2" placeholder="Es. Prima fila..."></textarea>
 
             <button class="btn" onclick="saveBooking()">Conferma Prenotazione</button>
             <button class="btn btn-cancel" onclick="closeModal('modal-book')">Annulla</button>
@@ -190,9 +196,19 @@
     <div class="modal" id="modal-detail">
         <div class="modal-content">
             <div class="modal-title" id="detail-modal-title">Dettaglio Ombrellone</div>
-            <div id="detail-body"></div>
-            <button class="btn btn-danger" style="margin-top: 15px;" onclick="requestDeleteCurrentBooking()">Cancella Prenotazione</button>
+            <div id="detail-body" style="font-size: 13px; line-height: 1.5;"></div>
+            <button class="btn btn-danger" style="margin-top: 15px;" onclick="openDeleteConfirmModal()">Cancella Prenotazione</button>
             <button class="btn btn-cancel" onclick="closeModal('modal-detail')">Chiudi</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-delete-confirm">
+        <div class="modal-content">
+            <div class="modal-title" style="color:#f44336;">🔒 Password Master Richiesta</div>
+            <p style="font-size: 12px; color: #aaa; text-align: center; margin-bottom: 12px;">Inserisci il codice Master per confermare la cancellazione dell'ombrellone.</p>
+            <input type="password" id="delete-master-pin" placeholder="Codice Master">
+            <button class="btn btn-danger" onclick="confirmDeleteWithMaster()">Conferma ed Elimina</button>
+            <button class="btn btn-cancel" onclick="closeModal('modal-delete-confirm')">Annulla</button>
         </div>
     </div>
 
@@ -201,7 +217,7 @@
             <div class="modal-title">📊 Incassi & Registro Spiaggia</div>
             
             <div id="master-login-box">
-                <p style="font-size: 13px; color: #aaa; margin-bottom: 12px; text-align: center;">Area protetta. Inserisci il codice master per visualizzare incassi e registro.</p>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px; text-align: center;">Area protetta. Inserisci il codice master per accedere.</p>
                 <input type="password" id="master-pin-input" placeholder="Codice master">
                 <button class="btn" onclick="verifyMaster()">Sblocca Report</button>
                 <button class="btn btn-cancel" onclick="closeModal('modal-master')">Chiudi</button>
@@ -211,7 +227,7 @@
                 <div class="form-row">
                     <div class="stat-card">
                         <div class="stat-val" id="stat-total-revenue">€0</div>
-                        <div class="stat-lbl">Incasso Totale Data</div>
+                        <div class="stat-lbl">Incasso Totale</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-val" id="stat-total-bookings">0</div>
@@ -220,7 +236,7 @@
                 </div>
 
                 <div class="section-tag">Registro Prenotazioni del Giorno</div>
-                <div style="max-height: 250px; overflow-y: auto;">
+                <div style="max-height: 220px; overflow-y: auto;">
                     <table class="reg-table">
                         <thead>
                             <tr>
@@ -228,25 +244,27 @@
                                 <th>Cliente</th>
                                 <th>Turno</th>
                                 <th>Prezzo</th>
-                                <th>Azione</th>
+                                <th>Elimina</th>
                             </tr>
                         </thead>
                         <tbody id="register-list"></tbody>
                     </table>
                 </div>
 
-                <button class="btn btn-cancel" style="margin-top: 15px;" onclick="closeModal('modal-master')">Chiudi</button>
+                <button class="btn btn-cancel" style="margin-top: 12px;" onclick="closeModal('modal-master')">Chiudi</button>
             </div>
         </div>
     </div>
 
     <script>
+        // GENERAZIONE AUTOMATICA OMBRELLONI DA 1 A 50 + B
         const UMBRELLAS = [];
-        for (let i = 1; i <= 39; i++) { UMBRELLAS.push(i.toString()); }
+        for (let i = 1; i <= 50; i++) { UMBRELLAS.push(i.toString()); }
         UMBRELLAS.push("B");
 
+        // CREDENZIALI ACCESSO
         const STAFF_PIN = "max78";
-        const MASTER_PIN = "9999";
+        const MASTER_PIN = "nikita78";
 
         let selectedUmbrellaId = null;
         let selectedBookingId = null;
@@ -321,8 +339,8 @@
                     occCount++;
                     card.className = 'table-card occupied';
                     card.innerHTML = `
-                        <div class="table-number">${uId === 'B' ? 'GAZEBO B' : 'OMBR. ' + uId}</div>
-                        <div class="slot-tag">${booking.slot.toUpperCase()}</div>
+                        <div class="table-number">${uId === 'B' ? 'GAZ B' : uId}</div>
+                        <div class="slot-tag">${booking.slot === 'Giornata Intera' ? 'INT' : (booking.slot === 'Mattina' ? 'MAT' : 'POM')}</div>
                         <div class="table-client">${booking.name}</div>
                     `;
                     card.onclick = () => openDetailModal(booking);
@@ -331,17 +349,15 @@
                     if (isPast) {
                         card.className = 'table-card free disabled';
                         card.innerHTML = `
-                            <div class="table-number">${uId === 'B' ? 'GAZEBO B' : uId}</div>
+                            <div class="table-number">${uId === 'B' ? 'GAZ B' : uId}</div>
                             <div class="table-status">OFF</div>
-                            <div></div>
                         `;
                         card.onclick = () => alert('Non è possibile inserire prenotazioni per date passate.');
                     } else {
                         card.className = 'table-card free';
                         card.innerHTML = `
-                            <div class="table-number">${uId === 'B' ? 'GAZEBO B' : uId}</div>
+                            <div class="table-number">${uId === 'B' ? 'GAZ B' : uId}</div>
                             <div class="table-status">LIBERO</div>
-                            <div></div>
                         `;
                         card.onclick = () => openBookModal(uId);
                     }
@@ -405,12 +421,22 @@
             document.getElementById('modal-detail').classList.add('active');
         }
 
-        function requestDeleteCurrentBooking() {
-            const pin = prompt('Inserisci il codice Master per cancellare (Default: 9999):');
+        // CANCELLAZIONE CON POPUP E PASSWORD NASCOSTA
+        function openDeleteConfirmModal(bookingId = null) {
+            if (bookingId) {
+                selectedBookingId = bookingId;
+            }
+            document.getElementById('delete-master-pin').value = '';
+            document.getElementById('modal-delete-confirm').classList.add('active');
+        }
+
+        function confirmDeleteWithMaster() {
+            const pin = document.getElementById('delete-master-pin').value;
             if (pin === MASTER_PIN) {
                 deleteBooking(selectedBookingId);
+                closeModal('modal-delete-confirm');
                 closeModal('modal-detail');
-            } else if (pin !== null) {
+            } else {
                 alert('Codice Master errato!');
             }
         }
@@ -465,11 +491,11 @@
             filtered.forEach(b => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><b>${b.umbrella === 'B' ? 'GAZ. B' : 'Ombr. ' + b.umbrella}</b></td>
+                    <td><b>${b.umbrella === 'B' ? 'GAZ B' : 'N° ' + b.umbrella}</b></td>
                     <td>${b.name}</td>
                     <td>${b.slot}</td>
                     <td>€${b.price}</td>
-                    <td><button style="background:none; border:none; color:#f44336; cursor:pointer;" onclick="deleteBooking(${b.id})">🗑️</button></td>
+                    <td><button style="background:none; border:none; color:#f44336; cursor:pointer;" onclick="openDeleteConfirmModal(${b.id})">🗑️</button></td>
                 `;
                 list.appendChild(tr);
             });
