@@ -263,7 +263,7 @@
                 
                 <!-- SELETTORE PERIODO DATE (DAL ... AL ...) -->
                 <div class="no-print" style="background:#2a2b30; border:1px solid #e5a93b; padding:10px; border-radius:8px; margin-bottom:12px;">
-                    <label style="font-size:11px; color:#e5a93b; font-weight:bold; display:block; margin-bottom:6px;">📅 SELEZIONA PERIODO REPORT DA STAMPARE:</label>
+                    <label style="font-size:11px; color:#e5a93b; font-weight:bold; display:block; margin-bottom:6px;">📅 SELEZIONA PERIODO DA VISUALIZZARE E STAMPARE:</label>
                     <div class="form-row" style="margin-bottom:6px;">
                         <div>
                             <label style="font-size:9px; color:#aaa; text-transform:uppercase;">Dal Giorno</label>
@@ -274,7 +274,7 @@
                             <input type="date" id="master-date-to" onchange="renderRegisterList()" style="margin-bottom:0;">
                         </div>
                     </div>
-                    <button class="btn btn-print" style="margin-top:6px;" onclick="window.print()">🖨️ Stampa Report (Giorno / Periodo)</button>
+                    <button class="btn btn-print" style="margin-top:6px;" onclick="window.print()">🖨️ Stampa Sezione Selezionata</button>
                 </div>
 
                 <!-- TESTATA VISIBILE SOLO NELLA STAMPA SU CARTA / PDF -->
@@ -295,7 +295,7 @@
                     </div>
                 </div>
 
-                <!-- DETTAGLIO PRENOTAZIONI DEL PERIODO SELEZIONATO (SOLO QUESTO VIENE STAMPATO) -->
+                <!-- DETTAGLIO PRENOTAZIONI DEL PERIODO SELEZIONATO -->
                 <div class="section-tag" id="section-title-report">Dettaglio Prenotazioni</div>
                 <div style="max-height: 250px; overflow-y: auto;">
                     <table class="reg-table">
@@ -314,16 +314,16 @@
                     </table>
                 </div>
 
-                <!-- STORICO COMPLETO GENERALE (VISIBILE SOLO A SCHERMO - NASCOSTO IN STAMPA) -->
-                <div class="no-print">
-                    <div class="section-tag" style="margin-top:15px;">📜 Storico Generale Totali (Solo a Schermo)</div>
+                <!-- RIEPILOGO GIORNO PER GIORNO (MOSTRATO SOLO SE SI SELEZIONANO PIÙ GIORNI) -->
+                <div id="daily-summary-section" style="display:none; margin-top:15px;">
+                    <div class="section-tag">📅 Totali Giorno per Giorno del Periodo Selezionato</div>
                     <div style="max-height: 150px; overflow-y: auto;">
                         <table class="reg-table">
                             <thead>
                                 <tr>
                                     <th>Data</th>
                                     <th>Prenotazioni</th>
-                                    <th>Incasso Totale</th>
+                                    <th>Incasso Giornaliero</th>
                                 </tr>
                             </thead>
                             <tbody id="history-list"></tbody>
@@ -576,7 +576,7 @@
             const dateFrom = document.getElementById('master-date-from').value || getTodayString();
             const dateTo = document.getElementById('master-date-to').value || dateFrom;
 
-            // Filtra per il intervallo di date selezionato
+            // FILTRA ESCLUSIVAMENTE PER IL PERIODO SELEZIONATO DALL'UTENTE
             const filtered = bookings.filter(b => b.date >= dateFrom && b.date <= dateTo);
 
             // Ordina per data e per numero ombrellone
@@ -592,18 +592,20 @@
                 document.getElementById('stat-date-lbl').innerText = `Incasso (${formatDateItalian(dateFrom)})`;
                 document.getElementById('print-date-header').innerText = `Data del Report: ${formatDateItalian(dateFrom)}`;
                 document.getElementById('section-title-report').innerText = `Dettaglio Prenotazioni del ${formatDateItalian(dateFrom)}`;
+                document.getElementById('daily-summary-section').style.display = 'none';
             } else {
                 document.getElementById('stat-date-lbl').innerText = `Incasso Totale Periodo`;
                 document.getElementById('print-date-header').innerText = `Periodo Report: Dal ${formatDateItalian(dateFrom)} Al ${formatDateItalian(dateTo)}`;
                 document.getElementById('section-title-report').innerText = `Dettaglio Prenotazioni Dal ${formatDateItalian(dateFrom)} Al ${formatDateItalian(dateTo)}`;
+                document.getElementById('daily-summary-section').style.display = 'block';
             }
 
-            // 1. TABELLA DETTAGLIO DEL PERIODO SELEZIONATO
+            // 1. TABELLA DETTAGLIO PRENOTAZIONI DEL PERIODO SELEZIONATO
             const list = document.getElementById('register-list');
             list.innerHTML = '';
 
             if (filtered.length === 0) {
-                list.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#888;">Nessuna prenotazione trovata per il periodo selezionato.</td></tr>';
+                list.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#888;">Nessuna prenotazione trovata nel periodo selezionato.</td></tr>';
             } else {
                 filtered.forEach(b => {
                     const tr = document.createElement('tr');
@@ -620,12 +622,12 @@
                 });
             }
 
-            // 2. TABELLA STORICO COMPLETO GENERALE (solo a schermo)
+            // 2. TABELLA RIEPILOGO GIORNALIERO (SOLO PER IL PERIODO SELEZIONATO)
             const historyList = document.getElementById('history-list');
             historyList.innerHTML = '';
 
             const dateMap = {};
-            bookings.forEach(b => {
+            filtered.forEach(b => {
                 if (!dateMap[b.date]) {
                     dateMap[b.date] = { count: 0, total: 0 };
                 }
@@ -633,10 +635,10 @@
                 dateMap[b.date].total += (b.price || 0);
             });
 
-            const sortedDates = Object.keys(dateMap).sort().reverse();
+            const sortedDates = Object.keys(dateMap).sort();
 
             if (sortedDates.length === 0) {
-                historyList.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">Nessuno storico presente.</td></tr>';
+                historyList.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">Nessun incasso nel periodo selezionato.</td></tr>';
             } else {
                 sortedDates.forEach(d => {
                     const tr = document.createElement('tr');
