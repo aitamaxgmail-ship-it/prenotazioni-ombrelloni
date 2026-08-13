@@ -79,7 +79,7 @@
         /* Modal Overlay */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 12px; }
         .modal.active { display: flex; }
-        .modal-content { background: #1e1f23; border: 1px solid #333; border-radius: 10px; width: 100%; max-width: 480px; padding: 16px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: #1e1f23; border: 1px solid #333; border-radius: 10px; width: 100%; max-width: 520px; padding: 16px; max-height: 90vh; overflow-y: auto; }
         .modal-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #e5a93b; text-align: center; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -138,7 +138,7 @@
 
         <div class="controls" style="margin-top: 6px;">
             <div>
-                <label>Data</label>
+                <label>Data Mappa</label>
                 <input type="date" id="filter-date" onchange="renderUmbrellas()">
             </div>
             <div>
@@ -261,24 +261,33 @@
 
             <div id="master-content-box" style="display: none;">
                 
-                <!-- SELETTORE DATA CALENDARIO E TASTO STAMPA -->
+                <!-- SELETTORE PERIODO DATE (DAL ... AL ...) -->
                 <div class="no-print" style="background:#2a2b30; border:1px solid #e5a93b; padding:10px; border-radius:8px; margin-bottom:12px;">
-                    <label style="font-size:11px; color:#e5a93b; font-weight:bold; display:block; margin-bottom:2px;">📅 SELEZIONA DATA REPORT DA CALENDARIO:</label>
-                    <input type="date" id="master-report-date" onchange="renderRegisterList()" style="margin-bottom:8px;">
-                    <button class="btn btn-print" onclick="window.print()">🖨️ Stampa Report Data Selezionata</button>
+                    <label style="font-size:11px; color:#e5a93b; font-weight:bold; display:block; margin-bottom:6px;">📅 SELEZIONA PERIODO REPORT DA STAMPARE:</label>
+                    <div class="form-row" style="margin-bottom:6px;">
+                        <div>
+                            <label style="font-size:9px; color:#aaa; text-transform:uppercase;">Dal Giorno</label>
+                            <input type="date" id="master-date-from" onchange="renderRegisterList()" style="margin-bottom:0;">
+                        </div>
+                        <div>
+                            <label style="font-size:9px; color:#aaa; text-transform:uppercase;">Al Giorno</label>
+                            <input type="date" id="master-date-to" onchange="renderRegisterList()" style="margin-bottom:0;">
+                        </div>
+                    </div>
+                    <button class="btn btn-print" style="margin-top:6px;" onclick="window.print()">🖨️ Stampa Report (Giorno / Periodo)</button>
                 </div>
 
-                <!-- TESTATA VISIBILE SOLO IN STAMPA -->
+                <!-- TESTATA VISIBILE SOLO NELLA STAMPA SU CARTA / PDF -->
                 <div class="print-only" style="text-align:center; margin-bottom:15px; border-bottom:2px solid #000; padding-bottom:10px;">
                     <h2 style="font-size:20px;">🏖️ LIDO OMBRELLONI - REPORT INCASSI</h2>
-                    <h4 id="print-date-header" style="font-size:14px; margin-top:4px; font-weight:normal;">Data: --</h4>
+                    <h4 id="print-date-header" style="font-size:14px; margin-top:4px; font-weight:normal;">Periodo: --</h4>
                 </div>
 
                 <!-- SCHEDE INCASSO DATA SELEZIONATA -->
                 <div class="form-row">
                     <div class="stat-card">
                         <div class="stat-val" id="stat-total-revenue">€0</div>
-                        <div class="stat-lbl" id="stat-date-lbl">Incasso Data</div>
+                        <div class="stat-lbl" id="stat-date-lbl">Incasso Totale</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-val" id="stat-total-bookings">0</div>
@@ -286,12 +295,13 @@
                     </div>
                 </div>
 
-                <!-- DETTAGLIO DATA SELEZIONATA -->
-                <div class="section-tag">Dettaglio Prenotazioni del Giorno Selezionato</div>
-                <div style="max-height: 200px; overflow-y: auto;">
+                <!-- DETTAGLIO PRENOTAZIONI DEL PERIODO SELEZIONATO (SOLO QUESTO VIENE STAMPATO) -->
+                <div class="section-tag" id="section-title-report">Dettaglio Prenotazioni</div>
+                <div style="max-height: 250px; overflow-y: auto;">
                     <table class="reg-table">
                         <thead>
                             <tr>
+                                <th>Data</th>
                                 <th>Ombr.</th>
                                 <th>Cliente</th>
                                 <th>Turno</th>
@@ -304,19 +314,21 @@
                     </table>
                 </div>
 
-                <!-- STORICO INCASSI TUTTI I GIORNI -->
-                <div class="section-tag" style="margin-top:15px;">📜 Storico Totali di Tutti i Giorni Registrati</div>
-                <div style="max-height: 180px; overflow-y: auto;">
-                    <table class="reg-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Prenotazioni</th>
-                                <th>Incasso Totale</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-list"></tbody>
-                    </table>
+                <!-- STORICO COMPLETO GENERALE (VISIBILE SOLO A SCHERMO - NASCOSTO IN STAMPA) -->
+                <div class="no-print">
+                    <div class="section-tag" style="margin-top:15px;">📜 Storico Generale Totali (Solo a Schermo)</div>
+                    <div style="max-height: 150px; overflow-y: auto;">
+                        <table class="reg-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Prenotazioni</th>
+                                    <th>Incasso Totale</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-list"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <button class="btn btn-cancel no-print" style="margin-top: 15px;" onclick="closeModal('modal-master')">Chiudi</button>
@@ -341,6 +353,13 @@
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
+        }
+
+        function formatDateItalian(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
 
         const todayStr = getTodayString();
@@ -490,6 +509,7 @@
             const title = booking.umbrella === 'B' ? 'Gazebo VIP B' : `Ombrellone N° ${booking.umbrella}`;
             document.getElementById('detail-modal-title').innerText = title;
             document.getElementById('detail-body').innerHTML = `
+                <p><b>Data:</b> ${formatDateItalian(booking.date)}</p>
                 <p><b>Cliente:</b> ${booking.name}</p>
                 <p><b>Durata:</b> ${booking.slot}</p>
                 <p><b>Lettini / Persone:</b> ${booking.sunbeds}</p>
@@ -532,7 +552,11 @@
             document.getElementById('master-login-box').style.display = 'block';
             document.getElementById('master-content-box').style.display = 'none';
             document.getElementById('master-pin-input').value = '';
-            document.getElementById('master-report-date').value = document.getElementById('filter-date').value;
+            
+            const selectedDate = document.getElementById('filter-date').value || getTodayString();
+            document.getElementById('master-date-from').value = selectedDate;
+            document.getElementById('master-date-to').value = selectedDate;
+            
             document.getElementById('modal-master').classList.add('active');
         }
 
@@ -549,27 +573,42 @@
 
         function renderRegisterList() {
             const bookings = getBookings();
-            const date = document.getElementById('master-report-date').value || document.getElementById('filter-date').value;
-            const filtered = bookings.filter(b => b.date === date);
+            const dateFrom = document.getElementById('master-date-from').value || getTodayString();
+            const dateTo = document.getElementById('master-date-to').value || dateFrom;
+
+            // Filtra per il intervallo di date selezionato
+            const filtered = bookings.filter(b => b.date >= dateFrom && b.date <= dateTo);
+
+            // Ordina per data e per numero ombrellone
+            filtered.sort((a, b) => a.date.localeCompare(b.date) || a.umbrella.localeCompare(b.umbrella, undefined, {numeric: true}));
 
             let totalRev = 0;
             filtered.forEach(b => totalRev += (b.price || 0));
 
             document.getElementById('stat-total-revenue').innerText = `€${totalRev}`;
-            document.getElementById('stat-date-lbl').innerText = `Incasso (${date})`;
-            document.getElementById('print-date-header').innerText = `Data del Report: ${date}`;
             document.getElementById('stat-total-bookings').innerText = filtered.length;
 
-            // 1. TABELLA DETTAGLIO GIORNO SELEZIONATO
+            if (dateFrom === dateTo) {
+                document.getElementById('stat-date-lbl').innerText = `Incasso (${formatDateItalian(dateFrom)})`;
+                document.getElementById('print-date-header').innerText = `Data del Report: ${formatDateItalian(dateFrom)}`;
+                document.getElementById('section-title-report').innerText = `Dettaglio Prenotazioni del ${formatDateItalian(dateFrom)}`;
+            } else {
+                document.getElementById('stat-date-lbl').innerText = `Incasso Totale Periodo`;
+                document.getElementById('print-date-header').innerText = `Periodo Report: Dal ${formatDateItalian(dateFrom)} Al ${formatDateItalian(dateTo)}`;
+                document.getElementById('section-title-report').innerText = `Dettaglio Prenotazioni Dal ${formatDateItalian(dateFrom)} Al ${formatDateItalian(dateTo)}`;
+            }
+
+            // 1. TABELLA DETTAGLIO DEL PERIODO SELEZIONATO
             const list = document.getElementById('register-list');
             list.innerHTML = '';
 
             if (filtered.length === 0) {
-                list.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">Nessuna prenotazione trovata per questa data.</td></tr>';
+                list.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#888;">Nessuna prenotazione trovata per il periodo selezionato.</td></tr>';
             } else {
                 filtered.forEach(b => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
+                        <td>${formatDateItalian(b.date)}</td>
                         <td><b>${b.umbrella === 'B' ? 'GAZ B' : 'N° ' + b.umbrella}</b></td>
                         <td>${b.name}</td>
                         <td>${b.slot}</td>
@@ -581,7 +620,7 @@
                 });
             }
 
-            // 2. TABELLA STORICO INCASSI
+            // 2. TABELLA STORICO COMPLETO GENERALE (solo a schermo)
             const historyList = document.getElementById('history-list');
             historyList.innerHTML = '';
 
@@ -602,7 +641,7 @@
                 sortedDates.forEach(d => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><b>${d}</b></td>
+                        <td><b>${formatDateItalian(d)}</b></td>
                         <td>${dateMap[d].count} ombrelloni</td>
                         <td><b>€${dateMap[d].total}</b></td>
                     `;
