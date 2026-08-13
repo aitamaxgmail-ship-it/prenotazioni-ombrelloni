@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lido - Prenotazione Ombrelloni</title>
+    <title>Lido - Prenotazione Ombrelloni Cloud</title>
+    
+    <!-- FIREBASE SDK IN TEMPO REALE (COMPATIBILE HTML SCRIPT) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: #121315; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; }
@@ -95,7 +100,6 @@
 
         .print-only { display: none; }
 
-        /* REGOLA PER LA STAMPA */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; }
             .screen, .modal, .no-print { display: none !important; }
@@ -192,7 +196,6 @@
                 <option value="Pomeriggio">Mezza (Pomeriggio)</option>
             </select>
 
-            <!-- CALCOLO PREZZO A PERSONA / LETTINO -->
             <div class="form-row">
                 <div>
                     <label>N° Lettini / Persone</label>
@@ -204,7 +207,6 @@
                 </div>
             </div>
 
-            <!-- BOX TOTALE CALCOLATO -->
             <div style="background:#2a2b30; border:1px solid #444; padding:8px; border-radius:6px; text-align:center; margin-bottom:10px;">
                 <span style="font-size:11px; color:#aaa; text-transform:uppercase;">Prezzo Totale Calcolato:</span>
                 <span id="book-total-display" style="font-size:16px; font-weight:bold; color:#e5a93b; margin-left:6px;">€20</span>
@@ -261,7 +263,6 @@
 
             <div id="master-content-box" style="display: none;">
                 
-                <!-- SELETTORE PERIODO DATE (DAL ... AL ...) -->
                 <div class="no-print" style="background:#2a2b30; border:1px solid #e5a93b; padding:10px; border-radius:8px; margin-bottom:12px;">
                     <label style="font-size:11px; color:#e5a93b; font-weight:bold; display:block; margin-bottom:6px;">📅 SELEZIONA PERIODO DA VISUALIZZARE E STAMPARE:</label>
                     <div class="form-row" style="margin-bottom:6px;">
@@ -277,13 +278,11 @@
                     <button class="btn btn-print" style="margin-top:6px;" onclick="window.print()">🖨️ Stampa Sezione Selezionata</button>
                 </div>
 
-                <!-- TESTATA VISIBILE SOLO NELLA STAMPA SU CARTA / PDF -->
                 <div class="print-only" style="text-align:center; margin-bottom:15px; border-bottom:2px solid #000; padding-bottom:10px;">
                     <h2 style="font-size:20px;">🏖️ LIDO OMBRELLONI - REPORT INCASSI</h2>
                     <h4 id="print-date-header" style="font-size:14px; margin-top:4px; font-weight:normal;">Periodo: --</h4>
                 </div>
 
-                <!-- SCHEDE INCASSO DATA SELEZIONATA -->
                 <div class="form-row">
                     <div class="stat-card">
                         <div class="stat-val" id="stat-total-revenue">€0</div>
@@ -295,7 +294,6 @@
                     </div>
                 </div>
 
-                <!-- DETTAGLIO PRENOTAZIONI DEL PERIODO SELEZIONATO -->
                 <div class="section-tag" id="section-title-report">Dettaglio Prenotazioni</div>
                 <div style="max-height: 250px; overflow-y: auto;">
                     <table class="reg-table">
@@ -314,7 +312,6 @@
                     </table>
                 </div>
 
-                <!-- RIEPILOGO GIORNO PER GIORNO (MOSTRATO SOLO SE SI SELEZIONANO PIÙ GIORNI) -->
                 <div id="daily-summary-section" style="display:none; margin-top:15px;">
                     <div class="section-tag">📅 Totali Giorno per Giorno del Periodo Selezionato</div>
                     <div style="max-height: 150px; overflow-y: auto;">
@@ -337,6 +334,26 @@
     </div>
 
     <script>
+        // -------------------------------------------------------------
+        // CONFIGURAZIONE FIREBASE CLOUD (INSERITE LE TUE CHIAVI)
+        // -------------------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyDA9gyPWT6qwguem__6ZvRpHGH6FL2JrHk",
+            authDomain: "lido-ombrelloni.firebaseapp.com",
+            databaseURL: "https://lido-ombrelloni-default-rtdb.firebaseio.com",
+            projectId: "lido-ombrelloni",
+            storageBucket: "lido-ombrelloni.firebasestorage.app",
+            messagingSenderId: "1018399974573",
+            appId: "1:1018399974573:web:a51d13056301f57770d224",
+            measurementId: "G-0RRS3C2J44"
+        };
+
+        // Inizializza Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const dbRef = db.ref('lido_bookings');
+
+        // VARIABILI GLOBALI
         const UMBRELLAS = [];
         for (let i = 1; i <= 50; i++) { UMBRELLAS.push(i.toString()); }
         UMBRELLAS.push("B");
@@ -346,6 +363,7 @@
 
         let selectedUmbrellaId = null;
         let selectedBookingId = null;
+        let currentBookings = [];
 
         function getTodayString() {
             const now = new Date();
@@ -366,13 +384,20 @@
         const datePicker = document.getElementById('filter-date');
         datePicker.value = todayStr;
 
-        function getBookings() {
-            return JSON.parse(localStorage.getItem('lido_bookings') || '[]');
-        }
-
-        function saveBookings(bookings) {
-            localStorage.setItem('lido_bookings', JSON.stringify(bookings));
-        }
+        // ASCOLTO IN TEMPO REALE DAL CLOUD
+        dbRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            currentBookings = [];
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    currentBookings.push({ id: key, ...data[key] });
+                });
+            }
+            renderUmbrellas();
+            if (document.getElementById('master-content-box').style.display === 'block') {
+                renderRegisterList();
+            }
+        });
 
         function login() {
             const pin = document.getElementById('pin-input').value;
@@ -404,7 +429,6 @@
 
             document.getElementById('past-banner').style.display = isPast ? 'block' : 'none';
 
-            const bookings = getBookings();
             const grid = document.getElementById('umbrellas-grid');
             grid.innerHTML = '';
 
@@ -412,7 +436,7 @@
             let occCount = 0;
 
             UMBRELLAS.forEach(uId => {
-                const booking = bookings.find(b => {
+                const booking = currentBookings.find(b => {
                     if (b.umbrella !== uId || b.date !== selectedDate) return false;
                     if (filterSlot === 'Tutti') return true;
                     return b.slot === filterSlot || b.slot === 'Giornata Intera' || filterSlot === 'Giornata Intera';
@@ -484,7 +508,6 @@
             const totalPrice = qty * unitPrice;
 
             const newBooking = {
-                id: Date.now(),
                 umbrella: selectedUmbrellaId,
                 date: document.getElementById('filter-date').value,
                 slot: document.getElementById('book-slot').value,
@@ -496,12 +519,10 @@
                 notes: document.getElementById('book-notes').value || 'Nessuna'
             };
 
-            const bookings = getBookings();
-            bookings.push(newBooking);
-            saveBookings(bookings);
+            // INVIA AL CLOUD IN TEMPO REALE
+            dbRef.push(newBooking);
 
             closeModal('modal-book');
-            renderUmbrellas();
         }
 
         function openDetailModal(booking) {
@@ -539,13 +560,8 @@
         }
 
         function deleteBooking(id) {
-            let bookings = getBookings();
-            bookings = bookings.filter(b => b.id !== id);
-            saveBookings(bookings);
-            renderUmbrellas();
-            if (document.getElementById('master-content-box').style.display === 'block') {
-                renderRegisterList();
-            }
+            // ELIMINA DAL CLOUD IN TEMPO REALE
+            db.ref('lido_bookings/' + id).remove();
         }
 
         function openMasterModal() {
@@ -572,18 +588,13 @@
         }
 
         function renderRegisterList() {
-            const bookings = getBookings();
             const rawFrom = document.getElementById('master-date-from').value || getTodayString();
             const rawTo = document.getElementById('master-date-to').value || rawFrom;
 
-            // NORMALIZZA LE DATE (Ordina sempre la data minore prima di quella maggiore)
             const dateFrom = rawFrom <= rawTo ? rawFrom : rawTo;
             const dateTo = rawFrom <= rawTo ? rawTo : rawFrom;
 
-            // FILTRA ESCLUSIVAMENTE PER IL PERIODO SELEZIONATO
-            const filtered = bookings.filter(b => b.date >= dateFrom && b.date <= dateTo);
-
-            // Ordina per data e per numero ombrellone
+            const filtered = currentBookings.filter(b => b.date >= dateFrom && b.date <= dateTo);
             filtered.sort((a, b) => a.date.localeCompare(b.date) || a.umbrella.localeCompare(b.umbrella, undefined, {numeric: true}));
 
             let totalRev = 0;
@@ -604,7 +615,6 @@
                 document.getElementById('daily-summary-section').style.display = 'block';
             }
 
-            // 1. TABELLA DETTAGLIO PRENOTAZIONI DEL PERIODO SELEZIONATO
             const list = document.getElementById('register-list');
             list.innerHTML = '';
 
@@ -620,13 +630,12 @@
                         <td>${b.slot}</td>
                         <td>${b.sunbeds}</td>
                         <td>€${b.price}</td>
-                        <td class="no-print"><button style="background:none; border:none; color:#f44336; cursor:pointer;" onclick="openDeleteConfirmModal(${b.id})">🗑️</button></td>
+                        <td class="no-print"><button style="background:none; border:none; color:#f44336; cursor:pointer;" onclick="openDeleteConfirmModal('${b.id}')">🗑️</button></td>
                     `;
                     list.appendChild(tr);
                 });
             }
 
-            // 2. TABELLA RIEPILOGO GIORNALIERO (SOLO PER IL PERIODO SELEZIONATO)
             const historyList = document.getElementById('history-list');
             historyList.innerHTML = '';
 
