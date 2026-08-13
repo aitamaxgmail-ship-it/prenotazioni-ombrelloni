@@ -30,7 +30,7 @@
         .btn:active { transform: scale(0.98); opacity: 0.9; }
         .btn-cancel { background: #444; color: #fff; margin-top: 6px; }
         .btn-danger { background: #d32f2f; color: #fff; }
-        .btn-print { background: #2196F3; color: #fff; margin-bottom: 10px; }
+        .btn-print { background: #2196F3; color: #fff; }
 
         /* Header App */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #2a2b30; gap: 8px; }
@@ -93,20 +93,24 @@
         .reg-table th, .reg-table td { padding: 6px 4px; text-align: left; border-bottom: 1px solid #333; }
         .reg-table th { color: #e5a93b; font-size: 9px; }
 
+        .print-only { display: none; }
+
         /* REGOLA PER LA STAMPA */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; }
             .screen, .modal, .no-print { display: none !important; }
             .modal.active#modal-master { display: block !important; position: static !important; background: none !important; padding: 0 !important; }
-            .modal-content { border: none !important; background: #fff !important; color: #000 !important; max-width: 100% !important; box-shadow: none !important; }
+            .modal-content { border: none !important; background: #fff !important; color: #000 !important; max-width: 100% !important; box-shadow: none !important; padding: 0 !important; }
             #master-login-box { display: none !important; }
             #master-content-box { display: block !important; }
+            .print-only { display: block !important; }
             .stat-card { border: 1px solid #ccc !important; background: #f9f9f9 !important; color: #000 !important; }
             .stat-val { color: #000 !important; }
             .section-tag { background: #eee !important; color: #000 !important; border-left-color: #000 !important; }
             .reg-table th, .reg-table td { border-bottom: 1px solid #ccc !important; color: #000 !important; }
             .reg-table th { color: #333 !important; }
-            .modal-title { color: #000 !important; }
+            .modal-title { display: none !important; }
+            div { max-height: none !important; overflow: visible !important; }
         }
     </style>
 </head>
@@ -246,7 +250,7 @@
     <!-- MODAL: REGISTRO MASTER, REPORT & STAMPA -->
     <div class="modal" id="modal-master">
         <div class="modal-content">
-            <div class="modal-title">📊 Incassi & Registro Spiaggia</div>
+            <div class="modal-title no-print">📊 Incassi & Registro Spiaggia</div>
             
             <div id="master-login-box">
                 <p style="font-size: 12px; color: #aaa; margin-bottom: 10px; text-align: center;">Area protetta. Inserisci il codice master per accedere.</p>
@@ -257,8 +261,18 @@
 
             <div id="master-content-box" style="display: none;">
                 
-                <!-- TASTO STAMPA -->
-                <button class="btn btn-print no-print" onclick="window.print()">🖨️ Stampa Report Completo</button>
+                <!-- SELETTORE DATA CALENDARIO E TASTO STAMPA -->
+                <div class="no-print" style="background:#2a2b30; border:1px solid #e5a93b; padding:10px; border-radius:8px; margin-bottom:12px;">
+                    <label style="font-size:11px; color:#e5a93b; font-weight:bold; display:block; margin-bottom:2px;">📅 SELEZIONA DATA REPORT DA CALENDARIO:</label>
+                    <input type="date" id="master-report-date" onchange="renderRegisterList()" style="margin-bottom:8px;">
+                    <button class="btn btn-print" onclick="window.print()">🖨️ Stampa Report Data Selezionata</button>
+                </div>
+
+                <!-- TESTATA VISIBILE SOLO IN STAMPA -->
+                <div class="print-only" style="text-align:center; margin-bottom:15px; border-bottom:2px solid #000; padding-bottom:10px;">
+                    <h2 style="font-size:20px;">🏖️ LIDO OMBRELLONI - REPORT INCASSI</h2>
+                    <h4 id="print-date-header" style="font-size:14px; margin-top:4px; font-weight:normal;">Data: --</h4>
+                </div>
 
                 <!-- SCHEDE INCASSO DATA SELEZIONATA -->
                 <div class="form-row">
@@ -273,8 +287,8 @@
                 </div>
 
                 <!-- DETTAGLIO DATA SELEZIONATA -->
-                <div class="section-tag">Dettaglio Prenotazioni della Data Selezionata</div>
-                <div style="max-height: 180px; overflow-y: auto;">
+                <div class="section-tag">Dettaglio Prenotazioni del Giorno Selezionato</div>
+                <div style="max-height: 200px; overflow-y: auto;">
                     <table class="reg-table">
                         <thead>
                             <tr>
@@ -291,7 +305,7 @@
                 </div>
 
                 <!-- STORICO INCASSI TUTTI I GIORNI -->
-                <div class="section-tag" style="margin-top:15px;">📜 Storico Totali per Data (Presenti e Passati)</div>
+                <div class="section-tag" style="margin-top:15px;">📜 Storico Totali di Tutti i Giorni Registrati</div>
                 <div style="max-height: 180px; overflow-y: auto;">
                     <table class="reg-table">
                         <thead>
@@ -421,7 +435,6 @@
             document.getElementById('count-occ').innerText = occCount;
         }
 
-        // CALCOLO AUTOMATICO PREZZO TOTALE
         function updateTotalPrice() {
             const qty = parseFloat(document.getElementById('book-sunbeds').value) || 0;
             const unitPrice = parseFloat(document.getElementById('book-unit-price').value) || 0;
@@ -519,6 +532,7 @@
             document.getElementById('master-login-box').style.display = 'block';
             document.getElementById('master-content-box').style.display = 'none';
             document.getElementById('master-pin-input').value = '';
+            document.getElementById('master-report-date').value = document.getElementById('filter-date').value;
             document.getElementById('modal-master').classList.add('active');
         }
 
@@ -535,7 +549,7 @@
 
         function renderRegisterList() {
             const bookings = getBookings();
-            const date = document.getElementById('filter-date').value;
+            const date = document.getElementById('master-report-date').value || document.getElementById('filter-date').value;
             const filtered = bookings.filter(b => b.date === date);
 
             let totalRev = 0;
@@ -543,6 +557,7 @@
 
             document.getElementById('stat-total-revenue').innerText = `€${totalRev}`;
             document.getElementById('stat-date-lbl').innerText = `Incasso (${date})`;
+            document.getElementById('print-date-header').innerText = `Data del Report: ${date}`;
             document.getElementById('stat-total-bookings').innerText = filtered.length;
 
             // 1. TABELLA DETTAGLIO GIORNO SELEZIONATO
@@ -550,7 +565,7 @@
             list.innerHTML = '';
 
             if (filtered.length === 0) {
-                list.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">Nessuna prenotazione per questa data.</td></tr>';
+                list.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">Nessuna prenotazione trovata per questa data.</td></tr>';
             } else {
                 filtered.forEach(b => {
                     const tr = document.createElement('tr');
@@ -566,7 +581,7 @@
                 });
             }
 
-            // 2. TABELLA STORICO INCASSI DI TUTTI I GIORNI (PRESENTE E PASSATI)
+            // 2. TABELLA STORICO INCASSI
             const historyList = document.getElementById('history-list');
             historyList.innerHTML = '';
 
