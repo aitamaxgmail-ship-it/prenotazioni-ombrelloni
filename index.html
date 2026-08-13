@@ -30,6 +30,7 @@
         .btn:active { transform: scale(0.98); opacity: 0.9; }
         .btn-cancel { background: #444; color: #fff; margin-top: 6px; }
         .btn-danger { background: #d32f2f; color: #fff; }
+        .btn-print { background: #2196F3; color: #fff; margin-bottom: 10px; }
 
         /* Header App */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #2a2b30; gap: 8px; }
@@ -78,7 +79,7 @@
         /* Modal Overlay */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 12px; }
         .modal.active { display: flex; }
-        .modal-content { background: #1e1f23; border: 1px solid #333; border-radius: 10px; width: 100%; max-width: 450px; padding: 16px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: #1e1f23; border: 1px solid #333; border-radius: 10px; width: 100%; max-width: 480px; padding: 16px; max-height: 90vh; overflow-y: auto; }
         .modal-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #e5a93b; text-align: center; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -89,12 +90,29 @@
         .stat-lbl { font-size: 9px; color: #aaa; text-transform: uppercase; }
 
         .reg-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px; }
-        .reg-table th, .reg-table td { padding: 6px 2px; text-align: left; border-bottom: 1px solid #333; }
+        .reg-table th, .reg-table td { padding: 6px 4px; text-align: left; border-bottom: 1px solid #333; }
         .reg-table th { color: #e5a93b; font-size: 9px; }
+
+        /* REGOLA PER LA STAMPA */
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            .screen, .modal, .no-print { display: none !important; }
+            .modal.active#modal-master { display: block !important; position: static !important; background: none !important; padding: 0 !important; }
+            .modal-content { border: none !important; background: #fff !important; color: #000 !important; max-width: 100% !important; box-shadow: none !important; }
+            #master-login-box { display: none !important; }
+            #master-content-box { display: block !important; }
+            .stat-card { border: 1px solid #ccc !important; background: #f9f9f9 !important; color: #000 !important; }
+            .stat-val { color: #000 !important; }
+            .section-tag { background: #eee !important; color: #000 !important; border-left-color: #000 !important; }
+            .reg-table th, .reg-table td { border-bottom: 1px solid #ccc !important; color: #000 !important; }
+            .reg-table th { color: #333 !important; }
+            .modal-title { color: #000 !important; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- SCREEN 1: LOGIN -->
     <div id="screen-login" class="screen active">
         <div class="login-box">
             <div class="brand-logo">🏖️</div>
@@ -105,6 +123,7 @@
         </div>
     </div>
 
+    <!-- SCREEN 2: DASHBOARD SPIAGGIA -->
     <div id="screen-app" class="screen">
         <div class="header">
             <div class="header-title">🏖️ Lido Ombrelloni</div>
@@ -133,6 +152,7 @@
             ⚠️ Data passata: consultazione storico (Prenotazioni disabilitate)
         </div>
 
+        <!-- MAPPA SPIAGGIA -->
         <div class="map-card">
             <div class="map-title" onclick="toggleMap()">
                 <span>🗺️ Schema Ombrelloni 2026</span>
@@ -149,9 +169,11 @@
             </div>
         </div>
 
+        <!-- GRIGLIA COMPATTA 1-50 + B -->
         <div class="grid" id="umbrellas-grid"></div>
     </div>
 
+    <!-- MODAL: PRENOTA -->
     <div class="modal" id="modal-book">
         <div class="modal-content">
             <div class="modal-title" id="book-modal-title">Prenota Ombrellone</div>
@@ -159,40 +181,48 @@
             <label>Nome cliente</label>
             <input type="text" id="book-name" placeholder="Es. Mario Rossi">
 
+            <label>Durata</label>
+            <select id="book-slot">
+                <option value="Giornata Intera">Giornata Intera</option>
+                <option value="Mattina">Mezza (Mattina)</option>
+                <option value="Pomeriggio">Mezza (Pomeriggio)</option>
+            </select>
+
+            <!-- CALCOLO PREZZO A PERSONA / LETTINO -->
             <div class="form-row">
                 <div>
-                    <label>Durata</label>
-                    <select id="book-slot">
-                        <option value="Giornata Intera">Giornata Intera</option>
-                        <option value="Mattina">Mezza (Mattina)</option>
-                        <option value="Pomeriggio">Mezza (Pomeriggio)</option>
-                    </select>
+                    <label>N° Lettini / Persone</label>
+                    <input type="number" id="book-sunbeds" value="2" min="1" oninput="updateTotalPrice()">
                 </div>
                 <div>
-                    <label>Prezzo (€)</label>
-                    <input type="number" id="book-price" placeholder="Es. 20" min="0">
+                    <label>Prezzo Singolo (€)</label>
+                    <input type="number" id="book-unit-price" value="10" min="0" oninput="updateTotalPrice()">
                 </div>
             </div>
 
+            <!-- BOX TOTALE CALCOLATO -->
+            <div style="background:#2a2b30; border:1px solid #444; padding:8px; border-radius:6px; text-align:center; margin-bottom:10px;">
+                <span style="font-size:11px; color:#aaa; text-transform:uppercase;">Prezzo Totale Calcolato:</span>
+                <span id="book-total-display" style="font-size:16px; font-weight:bold; color:#e5a93b; margin-left:6px;">€20</span>
+            </div>
+
             <div class="form-row">
-                <div>
-                    <label>Lettini / Sdraio</label>
-                    <input type="number" id="book-sunbeds" value="2" min="1">
-                </div>
                 <div>
                     <label>Telefono</label>
                     <input type="tel" id="book-phone" placeholder="Es. 3331234567">
                 </div>
+                <div>
+                    <label>Note / Richieste</label>
+                    <input type="text" id="book-notes" placeholder="Es. Prima fila...">
+                </div>
             </div>
-
-            <label>Note / Richieste</label>
-            <textarea id="book-notes" rows="2" placeholder="Es. Prima fila..."></textarea>
 
             <button class="btn" onclick="saveBooking()">Conferma Prenotazione</button>
             <button class="btn btn-cancel" onclick="closeModal('modal-book')">Annulla</button>
         </div>
     </div>
 
+    <!-- MODAL: DETTAGLIO PRENOTAZIONE -->
     <div class="modal" id="modal-detail">
         <div class="modal-content">
             <div class="modal-title" id="detail-modal-title">Dettaglio Ombrellone</div>
@@ -202,6 +232,7 @@
         </div>
     </div>
 
+    <!-- MODAL: CONFERMA CANCELLAZIONE -->
     <div class="modal" id="modal-delete-confirm">
         <div class="modal-content">
             <div class="modal-title" style="color:#f44336;">🔒 Password Master Richiesta</div>
@@ -212,6 +243,7 @@
         </div>
     </div>
 
+    <!-- MODAL: REGISTRO MASTER, REPORT & STAMPA -->
     <div class="modal" id="modal-master">
         <div class="modal-content">
             <div class="modal-title">📊 Incassi & Registro Spiaggia</div>
@@ -224,10 +256,15 @@
             </div>
 
             <div id="master-content-box" style="display: none;">
+                
+                <!-- TASTO STAMPA -->
+                <button class="btn btn-print no-print" onclick="window.print()">🖨️ Stampa Report Completo</button>
+
+                <!-- SCHEDE INCASSO DATA SELEZIONATA -->
                 <div class="form-row">
                     <div class="stat-card">
                         <div class="stat-val" id="stat-total-revenue">€0</div>
-                        <div class="stat-lbl">Incasso Totale</div>
+                        <div class="stat-lbl" id="stat-date-lbl">Incasso Data</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-val" id="stat-total-bookings">0</div>
@@ -235,34 +272,49 @@
                     </div>
                 </div>
 
-                <div class="section-tag">Registro Prenotazioni del Giorno</div>
-                <div style="max-height: 220px; overflow-y: auto;">
+                <!-- DETTAGLIO DATA SELEZIONATA -->
+                <div class="section-tag">Dettaglio Prenotazioni della Data Selezionata</div>
+                <div style="max-height: 180px; overflow-y: auto;">
                     <table class="reg-table">
                         <thead>
                             <tr>
                                 <th>Ombr.</th>
                                 <th>Cliente</th>
                                 <th>Turno</th>
-                                <th>Prezzo</th>
-                                <th>Elimina</th>
+                                <th>Pers/Lett.</th>
+                                <th>Totale</th>
+                                <th class="no-print">Azione</th>
                             </tr>
                         </thead>
                         <tbody id="register-list"></tbody>
                     </table>
                 </div>
 
-                <button class="btn btn-cancel" style="margin-top: 12px;" onclick="closeModal('modal-master')">Chiudi</button>
+                <!-- STORICO INCASSI TUTTI I GIORNI -->
+                <div class="section-tag" style="margin-top:15px;">📜 Storico Totali per Data (Presenti e Passati)</div>
+                <div style="max-height: 180px; overflow-y: auto;">
+                    <table class="reg-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Prenotazioni</th>
+                                <th>Incasso Totale</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-list"></tbody>
+                    </table>
+                </div>
+
+                <button class="btn btn-cancel no-print" style="margin-top: 15px;" onclick="closeModal('modal-master')">Chiudi</button>
             </div>
         </div>
     </div>
 
     <script>
-        // GENERAZIONE AUTOMATICA OMBRELLONI DA 1 A 50 + B
         const UMBRELLAS = [];
         for (let i = 1; i <= 50; i++) { UMBRELLAS.push(i.toString()); }
         UMBRELLAS.push("B");
 
-        // CREDENZIALI ACCESSO
         const STAFF_PIN = "max78";
         const MASTER_PIN = "nikita78";
 
@@ -369,16 +421,25 @@
             document.getElementById('count-occ').innerText = occCount;
         }
 
+        // CALCOLO AUTOMATICO PREZZO TOTALE
+        function updateTotalPrice() {
+            const qty = parseFloat(document.getElementById('book-sunbeds').value) || 0;
+            const unitPrice = parseFloat(document.getElementById('book-unit-price').value) || 0;
+            const total = qty * unitPrice;
+            document.getElementById('book-total-display').innerText = `€${total}`;
+        }
+
         function openBookModal(umbrellaId) {
             selectedUmbrellaId = umbrellaId;
             const title = umbrellaId === 'B' ? 'Gazebo VIP B' : `Ombrellone N° ${umbrellaId}`;
             document.getElementById('book-modal-title').innerText = `Prenota ${title}`;
             document.getElementById('book-name').value = '';
             document.getElementById('book-slot').value = 'Giornata Intera';
-            document.getElementById('book-price').value = '20';
             document.getElementById('book-sunbeds').value = '2';
+            document.getElementById('book-unit-price').value = '10';
             document.getElementById('book-phone').value = '';
             document.getElementById('book-notes').value = '';
+            updateTotalPrice();
             document.getElementById('modal-book').classList.add('active');
         }
 
@@ -386,13 +447,18 @@
             const name = document.getElementById('book-name').value.trim();
             if (!name) { alert('Inserisci il nome del cliente!'); return; }
 
+            const qty = parseFloat(document.getElementById('book-sunbeds').value) || 1;
+            const unitPrice = parseFloat(document.getElementById('book-unit-price').value) || 0;
+            const totalPrice = qty * unitPrice;
+
             const newBooking = {
                 id: Date.now(),
                 umbrella: selectedUmbrellaId,
                 date: document.getElementById('filter-date').value,
                 slot: document.getElementById('book-slot').value,
-                price: parseFloat(document.getElementById('book-price').value) || 0,
-                sunbeds: parseInt(document.getElementById('book-sunbeds').value) || 2,
+                sunbeds: qty,
+                unitPrice: unitPrice,
+                price: totalPrice,
                 name: name,
                 phone: document.getElementById('book-phone').value || 'N/D',
                 notes: document.getElementById('book-notes').value || 'Nessuna'
@@ -413,19 +479,17 @@
             document.getElementById('detail-body').innerHTML = `
                 <p><b>Cliente:</b> ${booking.name}</p>
                 <p><b>Durata:</b> ${booking.slot}</p>
-                <p><b>Lettini / Sdraio:</b> ${booking.sunbeds}</p>
-                <p><b>Prezzo Concordato:</b> €${booking.price}</p>
+                <p><b>Lettini / Persone:</b> ${booking.sunbeds}</p>
+                <p><b>Prezzo x Unità:</b> €${booking.unitPrice || (booking.price / (booking.sunbeds || 1))}</p>
+                <p><b>Totale Incassato:</b> €${booking.price}</p>
                 <p><b>Telefono:</b> ${booking.phone}</p>
                 <p><b>Note:</b> ${booking.notes}</p>
             `;
             document.getElementById('modal-detail').classList.add('active');
         }
 
-        // CANCELLAZIONE CON POPUP E PASSWORD NASCOSTA
         function openDeleteConfirmModal(bookingId = null) {
-            if (bookingId) {
-                selectedBookingId = bookingId;
-            }
+            if (bookingId) { selectedBookingId = bookingId; }
             document.getElementById('delete-master-pin').value = '';
             document.getElementById('modal-delete-confirm').classList.add('active');
         }
@@ -478,27 +542,58 @@
             filtered.forEach(b => totalRev += (b.price || 0));
 
             document.getElementById('stat-total-revenue').innerText = `€${totalRev}`;
+            document.getElementById('stat-date-lbl').innerText = `Incasso (${date})`;
             document.getElementById('stat-total-bookings').innerText = filtered.length;
 
+            // 1. TABELLA DETTAGLIO GIORNO SELEZIONATO
             const list = document.getElementById('register-list');
             list.innerHTML = '';
 
             if (filtered.length === 0) {
-                list.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">Nessuna prenotazione per questa data.</td></tr>';
-                return;
+                list.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">Nessuna prenotazione per questa data.</td></tr>';
+            } else {
+                filtered.forEach(b => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${b.umbrella === 'B' ? 'GAZ B' : 'N° ' + b.umbrella}</b></td>
+                        <td>${b.name}</td>
+                        <td>${b.slot}</td>
+                        <td>${b.sunbeds}</td>
+                        <td>€${b.price}</td>
+                        <td class="no-print"><button style="background:none; border:none; color:#f44336; cursor:pointer;" onclick="openDeleteConfirmModal(${b.id})">🗑️</button></td>
+                    `;
+                    list.appendChild(tr);
+                });
             }
 
-            filtered.forEach(b => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${b.umbrella === 'B' ? 'GAZ B' : 'N° ' + b.umbrella}</b></td>
-                    <td>${b.name}</td>
-                    <td>${b.slot}</td>
-                    <td>€${b.price}</td>
-                    <td><button style="background:none; border:none; color:#f44336; cursor:pointer;" onclick="openDeleteConfirmModal(${b.id})">🗑️</button></td>
-                `;
-                list.appendChild(tr);
+            // 2. TABELLA STORICO INCASSI DI TUTTI I GIORNI (PRESENTE E PASSATI)
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+
+            const dateMap = {};
+            bookings.forEach(b => {
+                if (!dateMap[b.date]) {
+                    dateMap[b.date] = { count: 0, total: 0 };
+                }
+                dateMap[b.date].count += 1;
+                dateMap[b.date].total += (b.price || 0);
             });
+
+            const sortedDates = Object.keys(dateMap).sort().reverse();
+
+            if (sortedDates.length === 0) {
+                historyList.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">Nessuno storico presente.</td></tr>';
+            } else {
+                sortedDates.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${d}</b></td>
+                        <td>${dateMap[d].count} ombrelloni</td>
+                        <td><b>€${dateMap[d].total}</b></td>
+                    `;
+                    historyList.appendChild(tr);
+                });
+            }
         }
 
         function closeModal(id) {
