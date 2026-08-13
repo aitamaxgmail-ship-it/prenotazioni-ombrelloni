@@ -573,10 +573,14 @@
 
         function renderRegisterList() {
             const bookings = getBookings();
-            const dateFrom = document.getElementById('master-date-from').value || getTodayString();
-            const dateTo = document.getElementById('master-date-to').value || dateFrom;
+            const rawFrom = document.getElementById('master-date-from').value || getTodayString();
+            const rawTo = document.getElementById('master-date-to').value || rawFrom;
 
-            // FILTRA ESCLUSIVAMENTE PER IL PERIODO SELEZIONATO DALL'UTENTE
+            // NORMALIZZA LE DATE (Ordina sempre la data minore prima di quella maggiore)
+            const dateFrom = rawFrom <= rawTo ? rawFrom : rawTo;
+            const dateTo = rawFrom <= rawTo ? rawTo : rawFrom;
+
+            // FILTRA ESCLUSIVAMENTE PER IL PERIODO SELEZIONATO
             const filtered = bookings.filter(b => b.date >= dateFrom && b.date <= dateTo);
 
             // Ordina per data e per numero ombrellone
